@@ -1,5 +1,4 @@
 /* Huaqin  Inc. (C) 2011. All rights reserved.
- * Copyright (C) 2023-2024 Sony Interactive Entertainment Inc.
  *
  * BY OPENING THIS FILE, RECEIVER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES
  * THAT THE SOFTWARE/FIRMWARE AND ITS DOCUMENTATIONS ("HUAQIN SOFTWARE")
@@ -42,6 +41,7 @@
 #include <linux/errno.h>
 #include <linux/soc/qcom/smem.h>
 #include <linux/rwsem.h>
+#include <linux/iio/consumer.h>
 //liukangping@huaqin.com add hardinfo sensor begin
 #if defined(CONFIG_NANOHUB) && defined(CONFIG_CUSTOM_KERNEL_SENSORHUB)
 #include "../mediatek/sensors-1.0/sensorHub/inc_v1/SCP_sensorHub.h"
@@ -763,9 +763,51 @@ static ssize_t show_nfc(struct device *dev, struct device_attribute *attr, char 
 //     return pcba_stage_table[ARRAY_SIZE(pcba_stage_table) - 1].pcba_stage_name;
 // }
 
+struct iio_channel *stageid_adc;
+int adc_val = -1;
+int get_stage_adc(void)
+{
+    int rc = 0;
+
+    pr_info("[HWINFO] stageid_adc iio_channel_get ok\n");
+    rc = iio_read_channel_processed(stageid_adc , &adc_val);
+    if (rc < 0) {
+        pr_err("Failed to read stageid over ADC, rc=%d\n", rc);
+        return -1;
+    }
+
+    adc_val = (adc_val / 1000);
+    pr_info("[HWINFO] %s adc_val = %d\n", __func__, adc_val);
+
+    return 0;
+}
+
+
 char* get_type_name(void)
 {
     unsigned int i;
+
+    if ((adc_val >= 0) && (adc_val <= 21)) {
+        pr_info("[HWINFO] VACD stage adc_val=%d, current_type_value=%d\n", adc_val, current_type_value);
+        if (current_type_value == 0)
+            return "VACD_EVT";
+        else if (current_type_value == 1)
+            return "VACD_DVT";
+        else if (current_type_value == 2)
+            return "VACD_PVT";
+        else if (current_type_value == 3)
+            return "VACD_MP";
+        else
+            return "VACD_UNKNOW";
+    } else if ((adc_val >= 1808) && (adc_val <= 1930)) {
+        pr_info("[HWINFO] after VACD stage adc_val=%d, current_type_value=%d\n", adc_val, current_type_value);
+        for (i = 0; i < ARRAY_SIZE(pcba_type_table); i ++) {
+            if (current_type_value == pcba_type_table[i].type_value) {
+                return pcba_type_table[i].pcba_type_name;
+            }
+        }
+        return "AFTER_VACD_UNKNOW";
+    }
 
     for (i = 0; i < ARRAY_SIZE(pcba_type_table); i ++) {
         if (current_type_value == pcba_type_table[i].type_value) {
@@ -1056,11 +1098,23 @@ static int HardwareInfo_driver_probe(struct platform_device *pdev)
 {
     int ret = -1;
     size_t size;
+    struct device *dev = &pdev->dev;
+
     pr_info("HardwareInfo_driver_probe start\n");
     memset(&hwinfo_data, 0, sizeof(hwinfo_data));
     memset(&hw_info_main_otp, 0, sizeof(hw_info_main_otp));
     memset(&hw_info_main2_otp, 0, sizeof(hw_info_main2_otp));
     memset(&hw_info_main3_otp, 0, sizeof(hw_info_main3_otp));
+
+    stageid_adc = iio_channel_get(dev, "get_stageid_adc_kb");
+    if (IS_ERR(stageid_adc)) {
+        ret = PTR_ERR(stageid_adc);
+        if (ret != -EPROBE_DEFER)
+            pr_err("stageid_adc channel unavailable, ret=%d\n", ret);
+        stageid_adc = NULL;
+        pr_err("stageid_adc iio_channel_get failed, ret=%d\n", ret);
+        return ret;
+    }
 
     ret = sysfs_create_group(&(pdev->dev.kobj), &hdinfo_attribute_group);
     if (ret < 0) {
@@ -1075,6 +1129,12 @@ static int HardwareInfo_driver_probe(struct platform_device *pdev)
         printk("[HWINFO] hw_info_parse_dt failed! (ret=%d)\n", ret);
         goto err1;
     }
+
+    ret = get_stage_adc();
+    if (ret < 0) {
+        printk("[HWINFO] get_stage_adc failed! (ret=%d)\n", ret);
+    }
+
     pcb_name = get_type_name();
     if(pcb_name && strcmp(pcb_name, "UNKNOWN") == 0){
         printk("byron:  UNKNOWN pcb name \n");

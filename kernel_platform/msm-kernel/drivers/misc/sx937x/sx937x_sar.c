@@ -3,7 +3,6 @@
  *
  * Driver for the sx937x
  * Copyright (c) 2011 Semtech Corp
- * Copyright (c) 2023 Sony Interactive Entertainment Inc.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -161,6 +160,26 @@ static int read_regStat(psx93XX_t this)
         if (sx937x_i2c_read_16bit(this,SX937X_IRQ_SOURCE,&data) > 0)
             return (data & 0x00FF);
     }
+    return 0;
+}
+
+static int sx937x_chipid_Check(psx93XX_t this)
+{
+    int ret;
+    u32 chip_id;
+    this->failStatusCode = 0;
+
+    //Check chipid
+    ret = sx937x_i2c_read_16bit(this, SX937X_DEVICE_INFO, &chip_id);
+    if(ret < 0)
+    {
+        this->failStatusCode = SX937x_I2C_ERROR;
+        pr_info("[SX937x]: read chipid error, sx937x chip_id= 0x%X failcode= 0x%x\n", chip_id, this->failStatusCode);
+        return ret;
+    }
+
+    pr_info("[SX937x]: sx937x chip_id= 0x%X failcode= 0x%x\n", chip_id, this->failStatusCode);
+    //return (int)this->failStatusCode;
     return 0;
 }
 
@@ -401,11 +420,11 @@ static void read_rawData(psx93XX_t this)
     ref_ph_a = pdata->ref_phase_a;
     ref_ph_b = pdata->ref_phase_b;
     ref_ph_c = pdata->ref_phase_c;
-#ifdef SAR_SENSOR_DEBUG    
+#ifdef SAR_SENSOR_DEBUG
     pr_info("[SX937x] ref_ph_a= %d ref_ph_b= %d ref_ph_c= %d\n", ref_ph_a, ref_ph_b, ref_ph_c);
 #endif /* SAR_SENSOR_DEBUG */
     sx937x_i2c_read_16bit(this, SX937X_DEVICE_STATUS_A, &uData);
-#ifdef SAR_SENSOR_DEBUG    
+#ifdef SAR_SENSOR_DEBUG
     pr_info("SX937X_DEVICE_STATUS_A= 0x%X\n", uData);
 #endif /* SAR_SENSOR_DEBUG */
     sx937x_i2c_read_16bit(this, SX937X_DEBUG_SETUP, &dbg_ph);
@@ -912,6 +931,12 @@ static int sx937x_probe(struct i2c_client *client, const struct i2c_device_id *i
         /* setup i2c communication */
         this->bus = client;
         i2c_set_clientdata(client, this);
+
+        err = sx937x_chipid_Check(this);
+        if (err) {
+            pr_err("[SX937x]:read chipid failed! err=%d\n", err);
+            return -1;
+        }
 
         /* record device struct */
         this->pdev = &client->dev;

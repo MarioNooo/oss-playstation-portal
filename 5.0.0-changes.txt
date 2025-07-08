@@ -1,0 +1,38 @@
+========================================================================
+Copyright (C) 2023-2024 Sony Interactive Entertainment Inc.
+
+The following list shows change modified by Sony Interactive Entertainment Inc.
+
+NOTE:
+A, M, D mean:
+  A: Added
+  M: Modified
+  D: Deleted
+  For other options: see "--diff-filter" in https://git-scm.com/docs/git-log
+========================================================================
+project_path:kernel_platform/msm-kernel/kernel/printk
+Mon Dec 21 12:58:37 2020 -0800
+M       kernel/printk/printk.c
+
+========================================================================
+project_path:kernel_platform/common/drivers/android
+Mon Oct 14 11:08:11 2024 +0800
+M       drivers/android/binder.c
+
+========================================================================
+project_path:kernel_platform/msm-kernel/drivers/misc/sx937x
+Fri Nov 22 10:29:22 2024 +0800
+M       drivers/misc/sx937x/sx937x_sar.c
+
+========================================================================
+project_path:kernel_platform/msm-kernel/drivers
+Fri Nov 22 10:41:50 2024 +0800
+M       drivers/iio/adc/qcom-spmi-adc5.c
+M       drivers/misc/hqhardwareinfo/hardware_info.c
+
+========================================================================
+project_path:kernel_platform/msm-kernel/mm
+Wed Jan 15 14:15:01 2025 +0800
+M       drivers/media/usb/uvc/uvc_driver.c
+M       mm/mremap.c
+
