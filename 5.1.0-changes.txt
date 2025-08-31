@@ -1,0 +1,61 @@
+========================================================================
+Copyright (C) 2023-2025 Sony Interactive Entertainment Inc.
+
+The following list shows change modified by Sony Interactive Entertainment Inc.
+
+NOTE:
+A, M, D mean:
+  A: Added
+  M: Modified
+  D: Deleted
+  For other options: see "--diff-filter" in https://git-scm.com/docs/git-log
+========================================================================
+project_path:target/vendor/qcom/opensource/audio-kernel/asoc
+Fri Feb 7 20:15:01 2025 +0800
+M       asoc/codecs/rouleur/rouleur.c
+M       asoc/codecs/wcd937x/wcd937x.c
+M       asoc/codecs/wcd938x/wcd938x.c
+========================================================================
+project_path:target/vendor/qcom/opensource/display-drivers/msm/dsi
+Fri Feb 7 20:03:13 2025 +0800
+M       msm/dsi/dsi_display.c
+========================================================================
+project_path:target/kernel_platform/common/drivers
+Fri Feb 7 19:53:36 2025 +0800
+M       drivers/dma-buf/heaps/cma_heap.c
+M       drivers/hid/hid-core.c
+========================================================================
+project_path:target/kernel_platform/msm-kernel/drivers
+Fri Feb 7 19:49:08 2025 +0800
+M       drivers/dma-buf/heaps/cma_heap.c
+M       drivers/hid/hid-core.c
+========================================================================
+project_path:target/kernel_platform/msm-kernel
+Wed Jan 15 14:15:01 2025 +0800
+M       drivers/media/usb/uvc/uvc_driver.c
+M       mm/mremap.c
+========================================================================
+project_path:target/kernel_platform/common
+Wed Jan 15 14:18:23 2025 +0800
+M       drivers/media/usb/uvc/uvc_driver.c
+M       mm/mremap.c
+========================================================================
+project_path:target/kernel_platform/common/sound/usb
+Thu Mar 13 17:02:13 2025 +0800
+M       sound/usb/clock.c
+========================================================================
+project_path:target/kernel_platform/msm-kernel/sound/usb
+Thu Mar 13 17:01:03 2025 +0800
+M       sound/usb/clock.c
+========================================================================
+project_path:target/kernel_platform/msm-kernel/drivers/char
+Mon Apr 14 09:49:48 2025 +0800
+Mon Apr 14 09:49:40 2025 +0800
+Fri Apr 11 16:36:18 2025 +0800
+Thu Mar 13 16:47:15 2025 +0800
+M       drivers/char/adsprpc.c
+========================================================================
+project_path:target/kernel_platform/msm-kernel/drivers/misc/hqhardwareinfo
+Wed Jan 22 15:58:49 2025 +0800
+M       drivers/misc/hqhardwareinfo/hardware_info.c
+

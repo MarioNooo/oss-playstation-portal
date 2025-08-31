@@ -94,6 +94,16 @@ static BOARD_TYPE_TABLE pcba_type_table[] =
     { .type_value = 7, .pcba_type_name = "UNKNOWN", },
 };
 
+static BOARD_TYPE_TABLE vacd_type_table[] =
+{
+    { .type_value = 0,  .pcba_type_name = "VACD_EVT", },
+    { .type_value = 1,  .pcba_type_name = "VACD_DVT", },
+    { .type_value = 2,  .pcba_type_name = "VACD_PVT", },
+    { .type_value = 3,  .pcba_type_name = "VACD_MP", },
+    { .type_value = 4,  .pcba_type_name = "VACD_MP_A", },
+    { .type_value = 5,  .pcba_type_name = "VACD_MP_B", },
+};
+
 static DDR_INFO_TABLE  ddr_type_table[] =
 {
     { .value = DDR_TYPE_LPDDR1,                    .name = "LPDDR1", },
@@ -789,16 +799,12 @@ char* get_type_name(void)
 
     if ((adc_val >= 0) && (adc_val <= 21)) {
         pr_info("[HWINFO] VACD stage adc_val=%d, current_type_value=%d\n", adc_val, current_type_value);
-        if (current_type_value == 0)
-            return "VACD_EVT";
-        else if (current_type_value == 1)
-            return "VACD_DVT";
-        else if (current_type_value == 2)
-            return "VACD_PVT";
-        else if (current_type_value == 3)
-            return "VACD_MP";
-        else
-            return "VACD_UNKNOW";
+        for (i = 0; i < ARRAY_SIZE(vacd_type_table); i ++) {
+            if (current_type_value == vacd_type_table[i].type_value) {
+                return vacd_type_table[i].pcba_type_name;
+            }
+        }
+        return "VACD_UNKNOW";
     } else if ((adc_val >= 1808) && (adc_val <= 1930)) {
         pr_info("[HWINFO] after VACD stage adc_val=%d, current_type_value=%d\n", adc_val, current_type_value);
         for (i = 0; i < ARRAY_SIZE(pcba_type_table); i ++) {
